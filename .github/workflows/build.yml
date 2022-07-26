@@ -29,6 +29,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/wipServer
           asset_name: wipServer
-          tag: ${{ github.ref }}
+          tag: v0.0.15
           overwrite: true
           body: "This is my release text"
