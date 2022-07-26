@@ -23,3 +23,12 @@ jobs:
         run: ./mvnw -B -Pnative -DskipTests package
       - name: Dump Target
         run: ls -al target
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/wipServer
+          asset_name: wipServer
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "This is my release text"
