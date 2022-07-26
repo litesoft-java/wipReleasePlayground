@@ -20,6 +20,6 @@ jobs:
           graalvm-version: 22.1.0
           java-version: 17
       - name: Build with Maven
-        run: ./mvnw -Pnative -DskipTests package
+        run: ./mvnw -B -Pnative -DskipTests package
       - name: Dump Target
         run: ls -al target
