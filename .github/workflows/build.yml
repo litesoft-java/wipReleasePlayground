@@ -12,6 +12,12 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+      - name: Generate release tag (vyy.mm.i) -- where yy=year, mm=month, i=iteration
+        uses: amitsingh-007/next-release-tag@v1.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check ENV var
+        run: echo "${{ env.release_tag }}"
       - name: graalvm-native-image-toolchain
         # You may pin to the exact commit or the version.
         # uses: helpermethod/graalvm-native-image-toolchain@c90a8f9c318e0c3b90e01fddcb1d75654360daf7
@@ -23,16 +29,12 @@ jobs:
         run: ./mvnw -B -Pnative -DskipTests package
       - name: Dump Target
         run: ls -al target
-      - name: Generate release tag (vyy.mm.i) -- where yy=year, mm=month, i=iteration
-        uses: amitsingh-007/next-release-tag@v1.0.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/wipServer
           asset_name: wipServer
-          tag: "$next_release_version"
+          tag: "${{ env.release_tag }}"
           overwrite: true
           body: "This is my release text"
