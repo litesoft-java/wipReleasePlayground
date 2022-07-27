@@ -7,17 +7,18 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+      - name: Check commit message
+        run: echo "${{ github.event.head_commit.message }}"
       - name: Generate release tag (vyy.mm.i) -- where yy=year, mm=month, i=iteration
         uses: amitsingh-007/next-release-tag@v1.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Check ENV var
-        run: echo "${{ env.release_tag }}"
       - name: graalvm-native-image-toolchain
         # You may pin to the exact commit or the version.
         # uses: helpermethod/graalvm-native-image-toolchain@c90a8f9c318e0c3b90e01fddcb1d75654360daf7
@@ -37,4 +38,4 @@ jobs:
           asset_name: wipServer
           tag: "${{ env.release_tag }}"
           overwrite: true
-          body: "This is my release text"
+          body: "${{ github.event.head_commit.message }}"
