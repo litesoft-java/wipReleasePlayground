@@ -15,6 +15,11 @@ jobs:
         uses: actions/checkout@v3
       - name: Check commit message
         run: echo "${{ github.event.head_commit.message }}"
+      - name: Generate ISO-8601 Z Time Stamp
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          format: 'YYYY/MM/DDTHH-mmZ'
       - name: Generate release tag (vyy.mm.i) -- where yy=year, mm=month, i=iteration
         uses: amitsingh-007/next-release-tag@v1.0.0
         with:
