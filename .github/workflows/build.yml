@@ -33,6 +33,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/wipServer
           asset_name: wipServer
-          tag: ${{ next_release_version }}
+          tag: "$next_release_version"
           overwrite: true
           body: "This is my release text"
