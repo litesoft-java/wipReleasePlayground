@@ -23,12 +23,16 @@ jobs:
         run: ./mvnw -B -Pnative -DskipTests package
       - name: Dump Target
         run: ls -al target
+      - name: Generate release tag (vyy.mm.i) -- where yy=year, mm=month, i=iteration
+        uses: amitsingh-007/next-release-tag@v1.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/wipServer
           asset_name: wipServer
-          tag: v0.0.16
+          tag: ${{ next_release_version }}
           overwrite: true
           body: "This is my release text"
