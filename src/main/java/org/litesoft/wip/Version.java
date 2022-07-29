@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.LongSupplier;
+
+import org.litesoft.utils.ISO8601ZtimeStamp;
 
 public class Version {
     public static final String RESOURCE_PATH = "version.txt";
@@ -76,16 +76,16 @@ public class Version {
             return error( noVersionDataCurrentTimeSupplier, path, "fileErrorParts", "" + parts.length );
         }
         String tagVersion = parts[0];
-        String releaseTimestamp = normalizeTimestamp( parts[1] );
+        String releaseTimestamp = parts[1];
         String error = validateTagVersion( tagVersion );
         if ( error != null ) {
             return error( noVersionDataCurrentTimeSupplier, path, "fileErrorTagVersion", error, " from '", tagVersion, "'" );
         }
-        error = validateReleaseTimestamp( releaseTimestamp );
-        if ( error != null ) {
+        ISO8601ZtimeStamp timeStamp = ISO8601ZtimeStamp.fromString( releaseTimestamp ).toMinute();
+        if ( timeStamp.hasError() ) {
             return error( noVersionDataCurrentTimeSupplier, path, "fileErrorReleaseTimestamp", error, " from '", releaseTimestamp, "'" );
         }
-        return new Version( tagVersion, releaseTimestamp );
+        return new Version( tagVersion, timeStamp.getValue() );
     }
 
     private static String validateTagVersion( String value ) {
@@ -106,21 +106,8 @@ public class Version {
         return error;
     }
 
-    private static String validateReleaseTimestamp( String value ) {
-        return null; // TODO: XXX
-    }
-
-    // normalize to the minute Zulu
-    // 2022-07-27T16:38+00:00Z
-    // 01234567-101234567-20123
-    // 2022-07-27T16:38Z
-    private static String normalizeTimestamp( String value ) {
-        return value; // TODO: XXX
-    }
-
     private static String toISO_8601z( LongSupplier timeSupplier ) {
-        String str = Instant.ofEpochMilli( timeSupplier.getAsLong() ).truncatedTo( ChronoUnit.MINUTES ).toString();
-        return str;
+        return ISO8601ZtimeStamp.fromEpochMillis( timeSupplier ).toMinute().getValue();
     }
 
     private static String checkDigits( String level, String value, int minDigits, int maxDigits ) {
@@ -128,7 +115,36 @@ public class Version {
     }
 
     private static String checkDigits( String level, String value, int minDigits, int maxDigits, int minValue, int maxValue ) {
-        return null; // TODO: XXX
+        if ( value.isBlank() ) {
+            return "no " + level;
+        }
+        if ( !value.equals( value.trim() ) ) {
+            return level + " value '" + value + "' has whitespace";
+        }
+        int len = value.length();
+        if ( len < minDigits ) {
+            return level + " value '" + value + "' too short, expected " + minDigits + " digits, but only got: " + len;
+        }
+        if ( maxDigits < len ) {
+            return level + " value '" + value + "' too long, expected " + maxDigits + " digits, but got: " + len;
+        }
+        int parsed;
+        try {
+            parsed = Integer.parseInt( value );
+        }
+        catch ( NumberFormatException e ) {
+            return level + " value '" + value + "' not an integer";
+        }
+        if ( parsed < 0 ) {
+            return level + " value '" + value + "' NOT a non-negative value, got: " + parsed;
+        }
+        if ( parsed < minValue ) {
+            return level + " value '" + value + "' too small, expected at least " + minDigits + ", but only got: " + parsed;
+        }
+        if ( maxValue < parsed ) {
+            return level + " value '" + value + "' too large, expected no more than " + maxValue + ", but got: " + parsed;
+        }
+        return null;
     }
 
     private static Version error( LongSupplier timeSupplier, String path, String errorType, String... what ) {
