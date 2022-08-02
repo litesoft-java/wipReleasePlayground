@@ -2,9 +2,9 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "release" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "release" ]
 
 jobs:
   release:
@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-      - name: Check commit message
-        run: echo "${{ github.event.head_commit.message }}"
       - name: Generate ISO-8601 Z Time Stamp
         id: time
         uses: nanzm/get-time-action@v1.1
@@ -24,15 +22,19 @@ jobs:
         uses: amitsingh-007/next-release-tag@v1.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-#      - name: graalvm-native-image-toolchain
-#        # You may pin to the exact commit or the version.
-#        # uses: helpermethod/graalvm-native-image-toolchain@c90a8f9c318e0c3b90e01fddcb1d75654360daf7
-#        uses: helpermethod/graalvm-native-image-toolchain@0.0.2
-#        with:
-#          graalvm-version: 22.1.0
-#          java-version: 17
-#      - name: Build with Maven
-#        run: ./mvnw -B -Pnative -DskipTests package
+      - name: Create version file
+        run: echo "${{ env.release_tag }} ${{ steps.time.outputs.time }} ${{ github.event.head_commit.message }}" > src/main/resources/version.txt
+      - name: show version file
+        run: cat src/main/resources/version.txt
+      - name: graalvm-native-image-toolchain
+        # You may pin to the exact commit or the version.
+        # uses: helpermethod/graalvm-native-image-toolchain@c90a8f9c318e0c3b90e01fddcb1d75654360daf7
+        uses: helpermethod/graalvm-native-image-toolchain@0.0.2
+        with:
+          graalvm-version: 22.2.0
+          java-version: 17
+      - name: Build with Maven
+        run: ./mvnw -B -Pnative -DskipTests package
       - name: Dump Target
         run: ls -al target
       - name: Upload binaries to release

@@ -5,10 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class Application {
-	public static final String VERSION = "0.1";
-
 	public static void main(String[] args) {
-		System.out.println(ATTENTION + "WIP application vs " + VERSION + ATTENTION);
+		System.out.println(ATTENTION + "WIP application vs " + Version.get() + ATTENTION);
 		SpringApplication.run( Application.class, args);
 	}
 

@@ -12,6 +12,8 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 
+/src/main/resources/version.txt
+
 ### STS ###
 .apt_generated
 .classpath
