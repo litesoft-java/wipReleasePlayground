@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Java Native CI with Maven -- No tests
 
 on:
   push:
