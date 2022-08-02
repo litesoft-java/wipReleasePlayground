@@ -1,10 +1,10 @@
-name: Java CI with Maven
+name: Java JAR CI with Maven & Tests
 
 on:
   push:
-    branches: [ "!release" ]
+    branches: [ "**", "!release" ]
   pull_request:
-    branches: [ "!release" ]
+    branches: [ "**", "!release" ]
 
 jobs:
   release:
