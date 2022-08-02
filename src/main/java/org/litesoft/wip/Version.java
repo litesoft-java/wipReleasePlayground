@@ -83,7 +83,7 @@ public class Version {
         }
         ISO8601ZtimeStamp timeStamp = ISO8601ZtimeStamp.fromString( releaseTimestamp ).toMinute();
         if ( timeStamp.hasError() ) {
-            return error( noVersionDataCurrentTimeSupplier, path, "fileErrorReleaseTimestamp", error, " from '", releaseTimestamp, "'" );
+            return error( noVersionDataCurrentTimeSupplier, path, "fileErrorReleaseTimestamp", timeStamp.getError(), " from '", releaseTimestamp, "'" );
         }
         return new Version( tagVersion, timeStamp.getValue() );
     }
@@ -147,12 +147,12 @@ public class Version {
         return null;
     }
 
-    private static Version error( LongSupplier timeSupplier, String path, String errorType, String... what ) {
+    private static Version error( LongSupplier timeSupplier, String path, String errorType, String... whats ) {
         StringBuilder sb = new StringBuilder().append( errorType );
-        if ( (what != null) && (what.length != 0) ) {
+        if ( (whats != null) && (whats.length != 0) ) {
             sb.append( '(' );
-            for ( String str : what ) {
-                sb.append( str );
+            for ( String what : whats ) {
+                sb.append( what );
             }
             sb.append( ')' );
         }

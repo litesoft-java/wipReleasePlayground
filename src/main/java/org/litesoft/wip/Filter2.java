@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 @SuppressWarnings("DefaultAnnotationParam")
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class Filter2 extends AbstractTestFilter {
+public class Filter2 extends AbstractFilter {
     public Filter2() {
         super( "Filter2" );
     }
