@@ -1,4 +1,4 @@
-package org.litesoft.wip;
+package org.litesoft.versioning;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,21 +7,34 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.LongSupplier;
+import javax.servlet.http.HttpServletRequest;
 
+import org.litesoft.filtering.Filterer;
 import org.litesoft.utils.ISO8601ZtimeStamp;
 
-public class Version {
+public class Version implements Filterer {
+    public static final String VERSION_URI = "/AppVersion";
     public static final String RESOURCE_PATH = "version.txt";
+
     private static final AtomicReference<Version> singleton = new AtomicReference<>();
 
-    public static String get() {
+    public static Version get() {
         Version version = singleton.get();
         if ( version == null ) {
             singleton.set( version = from( loadVersionFile( getVersionFileStream( RESOURCE_PATH ), RESOURCE_PATH ),
                                            RESOURCE_PATH, System::currentTimeMillis ) );
             System.out.println( "Version: " + version );
         }
-        return version.toString();
+        return version;
+    }
+
+    public static String getString() {
+        return get().toString();
+    }
+
+    @Override
+    public FilteredResponse processRequest( HttpServletRequest request ) {
+        return VERSION_URI.equals( request.getServletPath() ) ? FilteredResponse.ofOK( toString() ) : null;
     }
 
     private final String tagVersion;
