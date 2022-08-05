@@ -3,8 +3,6 @@ name: Java Native CI with Maven -- No tests
 on:
   push:
     branches: [ "release" ]
-  pull_request:
-    branches: [ "release" ]
 
 jobs:
   release:
